@@ -10,18 +10,17 @@ Colorectal cancer is the 3rd most common cancer. Application of prediction model
 - Outcome: Mortality
 
 ## Methodology
-1. Exploratory Data Analysis (In Progress)
+1. Exploratory Data Analysis
 2. Feature Engineering
 3. Model Development:
-   - Decision Tree Classifier Forest
-   - Neural Network (PyTorch) - In Progress
+   - Decision Tree Classifier
 4. Model Evaluation & Interpretation
 
 ## Results
-- **Best Model:** Neural Network
-- **Accuracy:** 87%
-- **AUC-ROC:** 0.92
-- **Clinical Impact:** Model could identify 85% of advanced cases
+- **Best Model:** Decision Tree Classifier
+- **Accuracy:** 60%
+- **F1-Score:** 0.7461719559280535
+
 
 ## Key Features
 [SHAP plot showing top predictors]
@@ -30,13 +29,15 @@ Colorectal cancer is the 3rd most common cancer. Application of prediction model
 Python | PyTorch | Pandas | Scikit-learn | Matplotlib | Seaborn
 
 ## Future Work
-- Incorporate genomic data
+- Utilize additional models
+   - Neural Network (PyTorch)
+   - Random Forrest Model
+   - K Nearest Neighbors
 - Add survival analysis
-- Deploy as clinical decision support tool
 
 ## How to Run
-[Instructions]
+Download the attached 'colorectal_cancer_dataset.csv' to local machine or local IDE environment and then run the scripts stored in a selected model or the EDA. 
 
 ## Author
-[Your Name] - Healthcare Data Analytics Professional
-LinkedIn: [link] | Portfolio: [link]
+[Nathan Lee] - Data Strategy Principal
+LinkedIn: [(https://www.linkedin.com/in/nathan-s-lee/)] | Portfolio: [link]
