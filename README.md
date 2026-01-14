@@ -1,21 +1,20 @@
-# Colorectal Cancer Stage Prediction Model
+# Colorectal Cancer Prediction Model
 
 ## Business Problem
-Colorectal cancer is the 3rd most common cancer. Early detection of advanced stages (III/IV) enables timely intervention, improving 5-year survival rates from 14% to 90%.
+Colorectal cancer is the 3rd most common cancer. Application of prediction models can provide insights on the most useful indicatars for survival and mortality. 
 
 ## Dataset
-- Source: [Kaggle/SEER/UCI]
-- Size: X patients
+- Source: Kaggle
+- Size: 167,497 Cases
 - Features: Age, sex, tumor characteristics, lab values
-- Outcome: Cancer stage (I/II vs III/IV)
+- Outcome: Mortality
 
 ## Methodology
-1. Exploratory Data Analysis
+1. Exploratory Data Analysis (In Progress)
 2. Feature Engineering
 3. Model Development:
-   - Logistic Regression (baseline)
-   - Random Forest
-   - Neural Network (PyTorch)
+   - Decision Tree Classifier Forest
+   - Neural Network (PyTorch) - In Progress
 4. Model Evaluation & Interpretation
 
 ## Results
