@@ -23,7 +23,8 @@ Colorectal cancer is the 3rd most common cancer. Application of prediction model
 
 
 ## Key Features
-[SHAP plot showing top predictors]
+<img width="1418" height="907" alt="image" src="https://github.com/user-attachments/assets/ab458df9-b4ff-4b42-ad6f-464bf8073021" />
+
 
 ## Technologies
 Python | PyTorch | Pandas | Scikit-learn | Matplotlib | Seaborn
