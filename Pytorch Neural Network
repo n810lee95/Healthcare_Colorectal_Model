@@ -1,0 +1,157 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
+import torch
+import torch.nn as nn
+
+# Load the dataset into a pandas DataFrame
+# df = pd.read_csv('colorectal_cancer_dataset.csv')
+
+# Remove duplicate rows to ensure data quality
+df = df.drop_duplicates()
+
+# Convert Boolean columns to binary (1/0) for modeling
+bool_cols = df.select_dtypes(include=['bool']).columns
+df[bool_cols] = df[bool_cols].astype(int)
+
+# Identify object (categorical) columns that need encoding
+obj_cols = df.select_dtypes(include=['object']).columns
+
+# Use Label Encoder to convert categorical variables to numeric
+le = LabelEncoder()
+for col in obj_cols:
+    df[col] = le.fit_transform(df[col])
+
+# Initialize StandardScaler to normalize numeric features (mean=0, std=1)
+scaler = StandardScaler()
+
+# Standardize each numeric column individually
+df[['Age']] = scaler.fit_transform(df[['Age']])
+df[['Tumor_Size_mm']] = scaler.fit_transform(df[['Tumor_Size_mm']])
+df[['Healthcare_Costs']] = scaler.fit_transform(df[['Healthcare_Costs']])
+df[['Incidence_Rate_per_100K']] = scaler.fit_transform(df[['Incidence_Rate_per_100K']])
+df[['Mortality_Rate_per_100K']] = scaler.fit_transform(df[['Mortality_Rate_per_100K']])
+
+# IMPORTANT: Save Patient_ID BEFORE splitting the data
+# This will allow us to track predictions back to specific patients
+patient_ids = df['Patient_ID'].copy()
+
+# Define features (X) and target (y)
+# Drop: target variables, ID column (not predictive)
+X = df.drop(columns=['Survival_Prediction', 'Survival_5_years', 'Mortality', 'Patient_ID'])
+y = df['Mortality']  # Binary target: 0 or 1
+
+# Split data into training (80%) and test (20%) sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=31
+)
+
+# Split Patient_IDs in same manner to align ids between training and validation sets
+_, patient_ids_test, _, _ = train_test_split(
+    patient_ids, y, test_size=0.2, random_state=31
+)
+
+# Convert training features to numpy array with float32 dtype 
+features_np = X_train.values.astype(np.float32)
+
+# Reshape target to column vector shape (n_samples, 1)
+target_np = y_train.values.astype(np.float32).reshape(-1, 1)
+
+# Convert numpy arrays to PyTorch tensors
+features_tensor = torch.from_numpy(features_np).float()
+target_tensor = torch.from_numpy(target_np).float()
+
+# Get the number of input features (columns in X_train)
+input_size = features_tensor.shape[1]
+print(f"Number of input features: {input_size}")
+
+# Build a Sequential neural network model
+# Architecture: input_size → 16 → 8 → 1
+mortality_model = nn.Sequential(
+    nn.Linear(input_size, 16),  
+    nn.ReLU(),                   
+    nn.Linear(16, 8),            
+    nn.ReLU(),                   
+    nn.Linear(8, 1),             
+    nn.Sigmoid()                 
+)
+
+# Define loss function: Binary Cross Entropy Loss
+criterion = nn.BCELoss()
+
+# Define optimizer: Adam with learning rate 0.001
+optimizer = torch.optim.Adam(mortality_model.parameters(), lr=0.001)
+
+# Training loop: 1000 epochs
+num_epochs = 1000
+print("\nTraining model...")
+for epoch in range(num_epochs):
+    # Forward pass: compute predictions
+    predictions = mortality_model(features_tensor)
+    
+    # Compute loss between predictions and actual targets
+    loss = criterion(predictions, target_tensor)
+    
+    # Backward pass: clear previous gradients
+    optimizer.zero_grad()
+    
+    # Compute gradients via backpropagation
+    loss.backward()
+    
+    # Update model weights using gradients
+    optimizer.step()
+    
+    # Print loss every 100 epochs to monitor training
+    if (epoch + 1) % 100 == 0:
+        print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
+
+# === PREDICTION ON TEST SET ===
+
+# Convert test features to tensor
+test_features_np = X_test.values.astype(np.float32)
+test_tensor = torch.from_numpy(test_features_np).float()
+
+# Set model to evaluation mode (disables dropout, batch norm training mode)
+mortality_model.eval()
+
+# Make predictions without computing gradients (saves memory)
+with torch.no_grad():
+    predictions = mortality_model(test_tensor)
+    
+    # Convert probabilities to binary predictions using 0.5 threshold
+    # Predictions >= 0.5 → 1 (mortality), < 0.5 → 0 (survival)
+    binary_predictions = (predictions >= 0.5).float()
+
+# Create DataFrame with Patient IDs and binary predictions
+test_predictions = pd.DataFrame({
+    'Patient_ID': patient_ids_test.values,  # Test set patient IDs
+    'Mortality': binary_predictions.numpy().flatten().astype(int)  # Binary predictions
+})
+
+# Display first few predictions
+print("\nTest Set Predictions:")
+print(test_predictions.head())
+
+# Show distribution of predictions
+print("\nPrediction Distribution:")
+print(test_predictions['Mortality'].value_counts())
+
+# === OPTIONAL: Evaluate model performance ===
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Get actual test labels
+y_test_actual = y_test.values
+
+# Compare predictions to actual values
+accuracy = accuracy_score(y_test_actual, binary_predictions.numpy().flatten())
+print(f"\nTest Accuracy: {accuracy:.4f}")
+
+# Detailed classification metrics
+print("\nClassification Report:")
+print(classification_report(y_test_actual, binary_predictions.numpy().flatten()))
+
+# Confusion matrix
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test_actual, binary_predictions.numpy().flatten()))
