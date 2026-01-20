@@ -14,6 +14,7 @@ Colorectal cancer is the 3rd most common cancer. Application of prediction model
 2. Feature Engineering
 3. Model Development:
    - Decision Tree Classifier
+   - Neural Network (PyTorch)
 4. Model Evaluation & Interpretation
 
 ## Results
@@ -27,11 +28,10 @@ Colorectal cancer is the 3rd most common cancer. Application of prediction model
 
 
 ## Technologies
-Python | PyTorch (Upcoming) | Pandas | Scikit-learn | Matplotlib | Seaborn
+Python | PyTorch | Pandas | Scikit-learn | Matplotlib | Seaborn
 
 ## Future Work
 - Utilize additional models
-   - Neural Network (PyTorch)
    - Random Forrest Model
    - K Nearest Neighbors
 - Add survival analysis
