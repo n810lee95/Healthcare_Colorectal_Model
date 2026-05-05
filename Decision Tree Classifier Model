@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score, classification_report
 
 
 # convert data to a pandas Dataframe
-# df = pd.read_csv(colorectal_cancer_dataset.csv)
+df = pd.read_csv(r# insert PATH file for "colorectal_cancer_dataset.csv")
 
 # Check data types in Dataframe
 print(df.info())
