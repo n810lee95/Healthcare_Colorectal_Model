@@ -25,6 +25,9 @@ df[bool_cols] = df[bool_cols].astype(int)
 # Select object columns
 obj_cols = df.select_dtypes(include=['object']).columns
 
+# Instantiate Label Encoder
+le = LabelEncoder()
+
 # Loop through columns and transform
 for col in obj_cols:
     df[col] = le.fit_transform(df[col])
